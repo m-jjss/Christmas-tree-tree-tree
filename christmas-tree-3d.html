@@ -167,6 +167,7 @@
   }
   #tipZone #tip { opacity: 0; transition: opacity 0.4s ease; }
   #tipZone:hover #tip { opacity: 1; }
+  #tipZone.tip-show #tip { opacity: 1; }
   #tip {
     padding: 8px 16px;
     font-size: 12px; letter-spacing: 1px;
@@ -201,7 +202,7 @@
     #importWrap { top: auto; bottom: 64px; right: 12px; }
     #managePanel { top: auto; bottom: 48px; max-height: 46vh; overflow-y: auto; }
     #tip { font-size: 11px; padding: 7px 13px; }
-    #greet { left: 50%; top: 18%; transform: translateX(-50%); text-align: center; }
+    #greet { left: 7%; top: 22%; transform: none; text-align: left; }
   }
 </style>
 
@@ -371,6 +372,11 @@ class MiniOrbit {
   }
 }
 const orbit = new MiniOrbit(camera, renderer.domElement);
+
+/* 手机/竖屏：初始拉远距离，避免粒子贴脸发糊 */
+if (window.innerWidth < window.innerHeight || window.innerWidth < 640) {
+  orbit.radius = 34;
+}
 
 /* ================= 灯光（供 3D 圣诞元素使用） ================= */
 scene.add(new THREE.AmbientLight('#ffffff', 0.35));
@@ -1201,6 +1207,12 @@ function hideLoading() {
   if (!el) return;
   el.style.opacity = '0';
   setTimeout(() => el.remove(), 950);
+  // 开场提示：双击 炸散 / 凝聚，显示 5 秒后淡出
+  const tipZone = document.getElementById('tipZone');
+  if (tipZone) {
+    tipZone.classList.add('tip-show');
+    setTimeout(() => tipZone.classList.remove('tip-show'), 5000);
+  }
 }
 
 function setPartMatrix(mesh, i, baseMatrix) {
